@@ -1,0 +1,11 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="json2class">
+    <output-path>$PROJECT_DIR$/out/artifacts/json2class</output-path>
+    <root id="archive" name="json2class.jar">
+      <element id="module-output" name="Json2Class" />
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/META-INF/plugin.xml" />
+      </element>
+    </root>
+  </artifact>
+</component>
