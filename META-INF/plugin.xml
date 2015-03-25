@@ -4,11 +4,14 @@
   <version>1.0</version>
   <vendor email="anzewei88@gmail.com" url="https://github.com/anzewei/Json2Class">An Zewei</vendor>
 
-  <description><![CDATA[
-      Plugin for generating java file from json string.Install plugin <a href="https://github.com/anzewei/JsonFile">JsonFile</a> for better performance if using Android Studio<br>
-      通过json生成java类，因为Android Studio默认不支持Json格式的文件，可以选择安装<a href="https://github.com/anzewei/JsonFile">JsonFile</a>以达到更好的体验效果<br>
-
-    ]]></description>
+  <description>
+      <![CDATA[
+      Plugin for generating java file from json string.Install plugin <a href="https://github.com/anzewei/JsonFile">JsonFile</a> for better performance if using Android Studio
+      <p>
+      通过json生成java类，因为Android Studio默认不支持Json格式的文件，可以选择安装<a href="https://github.com/anzewei/JsonFile">JsonFile</a>以达到更好的体验效果
+      </p>
+      ]]>
+  </description>
 
   <change-notes>
   </change-notes>
