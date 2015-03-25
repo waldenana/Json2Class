@@ -2,17 +2,15 @@
   <id>com.softdream.intellij.plugin</id>
   <name>Json2Class</name>
   <version>1.0</version>
-  <vendor email="support@yourcompany.com" url="http://www.yourcompany.com">YourCompany</vendor>
+  <vendor email="anzewei88@gmail.com" url="https://github.com/anzewei/Json2Class">An Zewei</vendor>
 
   <description><![CDATA[
-      Enter short description for your plugin here.<br>
-      <em>most HTML tags may be used</em>
+      Plugin for generating java file from json string.Install plugin <a href="https://github.com/anzewei/JsonFile">JsonFile</a> for better performance if using Android Studio<br>
+      通过json生成java类，因为Android Studio默认不支持Json格式的文件，可以选择安装<a href="https://github.com/anzewei/JsonFile">JsonFile</a>以达到更好的体验效果<br>
+
     ]]></description>
 
-  <change-notes><![CDATA[
-      Add change notes here.<br>
-      <em>most HTML tags may be used</em>
-    ]]>
+  <change-notes>
   </change-notes>
 
   <!-- please see http://confluence.jetbrains.com/display/IDEADEV/Build+Number+Ranges for description -->
@@ -38,9 +36,10 @@
 
   <actions>
     <!-- Add your actions here -->
-      <action id="Json2Class.NewJson" class="com.softdream.intellij.plugin.action.ClassJsonAction"  text="Class From Json">
+      <action id="Json2Class.NewJson" class="com.softdream.intellij.plugin.action.ClassJsonAction" icon="/icons/json.png" text="Class From Json">
           <add-to-group group-id="NewGroup" anchor="first"/>
       </action>
   </actions>
-
+    <extensions defaultExtensionNs="com.intellij">
+    </extensions>
 </idea-plugin>

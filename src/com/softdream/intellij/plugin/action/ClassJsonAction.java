@@ -17,9 +17,6 @@ public class ClassJsonAction extends AnAction {
     public void actionPerformed(final AnActionEvent e) {
        final VirtualFile file = e.getData(LangDataKeys.VIRTUAL_FILE);
         PsiDirectory directory = PsiManager.getInstance(e.getProject()).findDirectory(file);
-        Dialog jsonD = new JsonViewDialog(e.getProject(), directory);
-        jsonD.setSize(400 ,200);
-        jsonD.setLocationRelativeTo(null);
-        jsonD.setVisible(true);
+        new JsonViewDialog(e.getProject(), directory).show();
     }
 }

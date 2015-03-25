@@ -1,17 +1,14 @@
 package com.softdream.intellij.plugin.ui;
 
-import com.intellij.ide.structureView.StructureView;
 import com.intellij.json.JsonLanguage;
-import com.intellij.lang.LanguageStructureViewBuilder;
+import com.intellij.lang.Language;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.Result;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.fileEditor.FileEditor;
-import com.intellij.openapi.fileEditor.ex.FileEditorManagerEx;
 import com.intellij.openapi.fileEditor.ex.FileEditorProviderManager;
-import com.intellij.openapi.fileEditor.impl.text.PsiAwareTextEditorImpl;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.MessageDialogBuilder;
+import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.*;
 import com.intellij.psi.codeStyle.CodeStyleManager;
@@ -19,56 +16,35 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.softdream.intellij.plugin.utils.DialogsFactory;
 import com.softdream.intellij.plugin.utils.JsonParser;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.io.IOException;
+import java.awt.event.ActionEvent;
 
-public class JsonViewDialog extends JDialog {
+public class JsonViewDialog extends DialogWrapper {
     private JPanel contentPane;
     private JTextField textField1;
-    private JButton buttonOK;
     private JPanel codePane;
-    private JButton buttonFormat;
     private Project mProject;
     private PsiFile mFile;
     private JsonParser parser;
+    private final AbstractAction myApplyAction = new AbstractAction("Format") {
+        @Override
+        public void actionPerformed(ActionEvent event) {
+            onFormat();
+        }
+    };
 
     public JsonViewDialog(Project project,PsiDirectory file) {
-        setContentPane(contentPane);
-        setModal(true);
-        getRootPane().setDefaultButton(buttonOK);
+        super(project);
         parser = new JsonParser(project,file);
         mProject = project;
-        buttonOK.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                onOK();
-            }
-        });
-        buttonFormat.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                onFormat();
-            }
-        });
-
-// call onCancel() when cross is clicked
-        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-        addWindowListener(new WindowAdapter() {
-            public void windowClosing(WindowEvent e) {
-                onCancel();
-            }
-        });
-
-// call onCancel() on ESCAPE
-        contentPane.registerKeyboardAction(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                onCancel();
-            }
-        }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
-//
-        mFile = PsiFileFactory.getInstance(mProject).createFileFromText("d.json",JsonLanguage.INSTANCE,"{}");
+        myApplyAction.setEnabled(true);
+        myApplyAction.putValue(Action.NAME,"&Format");
+        Language language = Language.findLanguageByID("JSON");
+        if (language == null)
+            language = Language.findLanguageByID("TEXT");
+        mFile = PsiFileFactory.getInstance(mProject).createFileFromText("d.json",language ,"");
         FileEditor editor = FileEditorProviderManager.getInstance().getProviders(mProject,mFile.getVirtualFile())[0].createEditor(mProject, mFile.getVirtualFile());
 
         GridConstraints constraints = new GridConstraints();
@@ -78,6 +54,21 @@ public class JsonViewDialog extends JDialog {
         constraints.setFill(GridConstraints.ALIGN_FILL);
         constraints.setHSizePolicy(GridConstraints.SIZEPOLICY_FIXED);
             codePane.add(editor.getComponent(), constraints);
+        init();
+
+    }
+    @NotNull
+    @Override
+    protected Action[] createActions() {
+        final Action close = getOKAction();
+        close.putValue(Action.NAME, "&Ok");
+        return new Action[]{myApplyAction,close};
+    }
+
+    @Nullable
+    @Override
+    protected String getDimensionServiceKey() {
+        return "Json2ClassWin";
     }
 
     private void onFormat() {
@@ -96,11 +87,22 @@ public class JsonViewDialog extends JDialog {
         );
     }
 
-    private void onOK() {
-// add your code here
+    @Nullable
+    @Override
+    protected JComponent createCenterPanel() {
+        return contentPane;
+    }
+
+    @Override
+    protected void doOKAction() {
+        if(onOK())
+        super.doOKAction();
+    }
+
+    private boolean onOK() {
         if (StringUtil.isEmpty(textField1.getText())) {
             DialogsFactory.showMissingSourcePathDialog(mProject);
-            return;
+            return false;
         }
         PsiType type = null;
         try {
@@ -108,13 +110,7 @@ public class JsonViewDialog extends JDialog {
         } catch (Exception e) {
             DialogsFactory.showErrorDialog(mProject,e.getMessage());
         }
-        if (type != null)
-            dispose();
-    }
-
-    private void onCancel() {
-// add your code here if necessary
-        dispose();
+        return type != null;
     }
 
 }
