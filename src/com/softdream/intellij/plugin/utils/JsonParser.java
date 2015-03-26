@@ -33,7 +33,7 @@ public class JsonParser {
         Iterator<String> names=jsonReaderEx.keys();
         while (names.hasNext()){
             String nodeName = names.next();
-            bean.addField(nodeName,nextType(jsonReaderEx.get(nodeName),nodeName));
+            bean.addField(nodeName,nextType(jsonReaderEx.get(nodeName),captureName(name)+captureName(nodeName)));
         }
         final PsiClass psiClass =psiElementFactory.createClass(captureName(name));
         new WriteCommandAction.Simple<String>(mProject,psiClass.getContainingFile()){
