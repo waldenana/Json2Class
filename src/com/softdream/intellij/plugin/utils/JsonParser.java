@@ -16,11 +16,15 @@ public class JsonParser {
     private Project mProject;
     private PsiDirectory directory;
     private PsiElementFactory psiElementFactory;
-
+    private boolean mSerializable=false;
     public JsonParser(Project project,PsiDirectory fileDirectory){
         mProject = project;
         directory= fileDirectory;
         psiElementFactory = JavaPsiFacade.getInstance(mProject).getElementFactory();
+    }
+
+    public void setSerializable(boolean mSerializable){
+        this.mSerializable = mSerializable;
     }
 
     public  PsiType formatJsonReader(String text,String name){
@@ -36,10 +40,12 @@ public class JsonParser {
             bean.addField(nodeName,nextType(jsonReaderEx.get(nodeName),captureName(name)+captureName(nodeName)));
         }
         final PsiClass psiClass =psiElementFactory.createClass(captureName(name));
+
         new WriteCommandAction.Simple<String>(mProject,psiClass.getContainingFile()){
 
             @Override
             protected void run() throws Throwable {
+                bean.setSerializable(mSerializable);
                 bean.generCode(psiElementFactory,psiClass);
                 directory.add(psiClass);
             }

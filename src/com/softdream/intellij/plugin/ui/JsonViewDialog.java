@@ -1,5 +1,6 @@
 package com.softdream.intellij.plugin.ui;
 
+import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.lang.Language;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.Result;
@@ -25,13 +26,15 @@ import java.awt.event.ActionEvent;
 import java.io.IOException;
 
 public class JsonViewDialog extends DialogWrapper {
+    private static final String NAME_SERIALIZABLE = "serializable";
     private JPanel contentPane;
     private JTextField textField1;
     private JPanel codePane;
+    private JCheckBox serializableCheckBox;
     private Project mProject;
     private PsiFile mFile;
     private JsonParser parser;
-    private boolean bSupportJson=true;
+    private boolean bSupportJson = true;
     private FileEditor mEditor;
     private final AbstractAction myApplyAction = new AbstractAction("Format") {
         @Override
@@ -61,9 +64,10 @@ public class JsonViewDialog extends DialogWrapper {
         constraints.setFill(GridConstraints.ALIGN_FILL);
         constraints.setHSizePolicy(GridConstraints.SIZEPOLICY_FIXED);
         codePane.add(editor.getComponent(), constraints);
-        Rectangle size= ScreenUtil.getMainScreenBounds();
-       codePane.setSize((int) (size.width * 0.75), (int) (size.height * 0.75));
+        Rectangle size = ScreenUtil.getMainScreenBounds();
+        codePane.setSize((int) (size.width * 0.75), (int) (size.height * 0.75));
         init();
+        serializableCheckBox.setSelected(PropertiesComponent.getInstance().getBoolean(NAME_SERIALIZABLE));
         mEditor = editor;
     }
 
@@ -73,9 +77,9 @@ public class JsonViewDialog extends DialogWrapper {
         final Action close = getOKAction();
         close.putValue(Action.NAME, "&Ok");
         if (bSupportJson)
-        return new Action[]{myApplyAction, close};
+            return new Action[]{myApplyAction, close};
         else
-        return new Action[]{close};
+            return new Action[]{close};
     }
 
     @Nullable
@@ -131,8 +135,10 @@ public class JsonViewDialog extends DialogWrapper {
             DialogsFactory.showMissingSourcePathDialog(mProject);
             return false;
         }
+        PropertiesComponent.getInstance().setValue(NAME_SERIALIZABLE, serializableCheckBox.isSelected());
         PsiType type = null;
         try {
+            parser.setSerializable(serializableCheckBox.isSelected());
             type = parser.formatJsonReader(PsiDocumentManager.getInstance(mProject).getDocument(mFile).getText(), textField1.getText());
         } catch (Exception e) {
             DialogsFactory.showErrorDialog(mProject, e.getMessage());
