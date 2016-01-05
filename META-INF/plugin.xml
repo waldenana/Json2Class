@@ -1,7 +1,7 @@
 <idea-plugin version="2">
   <id>com.softdream.intellij.plugin</id>
   <name>Json2Class</name>
-  <version>1.1</version>
+  <version>1.2</version>
   <vendor email="anzewei88@gmail.com" url="https://github.com/anzewei/Json2Class">An Zewei</vendor>
 
   <description>
@@ -12,6 +12,8 @@
 
   <change-notes>
     <![CDATA[
+      1.2<br>
+      <em>Fixed Crash Bug</em><br>
       1.1<br>
       <em>add implements Serializable</em><br>
       1.0<br>
@@ -28,6 +30,8 @@
 
   <extensions defaultExtensionNs="com.intellij">
     <!-- Add your extensions here -->
+    <projectService serviceInterface="com.softdream.intellij.plugin.utils.Settings"
+                    serviceImplementation="com.softdream.intellij.plugin.utils.Settings"/>
   </extensions>
 
   <application-components>

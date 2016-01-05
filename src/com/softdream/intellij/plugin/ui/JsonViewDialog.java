@@ -1,6 +1,5 @@
 package com.softdream.intellij.plugin.ui;
 
-import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.lang.Language;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.Result;
@@ -17,6 +16,7 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.softdream.intellij.plugin.utils.DialogsFactory;
 import com.softdream.intellij.plugin.utils.JsonFormat;
 import com.softdream.intellij.plugin.utils.JsonParser;
+import com.softdream.intellij.plugin.utils.Settings;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -56,7 +56,7 @@ public class JsonViewDialog extends DialogWrapper {
         }
         mFile = PsiFileFactory.getInstance(mProject).createFileFromText("d.json", language, "");
         FileEditor editor = FileEditorProviderManager.getInstance().getProviders(mProject, mFile.getVirtualFile())[0].createEditor(mProject, mFile.getVirtualFile());
-
+        Settings settings = Settings.getInstance(project);
         GridConstraints constraints = new GridConstraints();
         constraints.setAnchor(GridConstraints.ANCHOR_WEST);
         constraints.setVSizePolicy(GridConstraints.ALIGN_FILL);
@@ -67,7 +67,7 @@ public class JsonViewDialog extends DialogWrapper {
         Rectangle size = ScreenUtil.getMainScreenBounds();
         codePane.setSize((int) (size.width * 0.75), (int) (size.height * 0.75));
         init();
-        serializableCheckBox.setSelected(PropertiesComponent.getInstance().getBoolean(NAME_SERIALIZABLE));
+        serializableCheckBox.setSelected(settings.isSerializable());
         mEditor = editor;
     }
 
@@ -135,7 +135,7 @@ public class JsonViewDialog extends DialogWrapper {
             DialogsFactory.showMissingSourcePathDialog(mProject);
             return false;
         }
-        PropertiesComponent.getInstance().setValue(NAME_SERIALIZABLE, serializableCheckBox.isSelected());
+        Settings.getInstance(mProject).setSerializable(serializableCheckBox.isSelected());
         PsiType type = null;
         try {
             parser.setSerializable(serializableCheckBox.isSelected());
