@@ -15,14 +15,24 @@ import org.jetbrains.annotations.Nullable;
 )
 public class Settings implements PersistentStateComponent<Settings> {
 
-    private boolean sourcePath;
+    private boolean serializable;
+    private boolean parcelable;
+
+    public boolean isParcelable() {
+        return parcelable;
+    }
+
+    public void setParcelable(boolean parcelable) {
+        this.parcelable = parcelable;
+    }
+
 
     public boolean isSerializable() {
-        return sourcePath;
+        return serializable;
     }
 
     public void setSerializable(boolean sourcePath) {
-        this.sourcePath = sourcePath;
+        this.serializable = sourcePath;
     }
 
     public static Settings getInstance(Project project) {

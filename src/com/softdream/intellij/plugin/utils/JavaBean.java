@@ -1,13 +1,10 @@
 package com.softdream.intellij.plugin.utils;
 
-import com.intellij.openapi.project.Project;
 import com.intellij.psi.*;
-import com.intellij.psi.search.GlobalSearchScope;
 import com.siyeh.ig.fixes.SerialVersionUIDBuilder;
+import com.softdream.intellij.plugin.parcelable.ParcelableGenerator;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by zewei on 2015-03-13.
@@ -16,16 +13,21 @@ public class JavaBean {
     private HashMap<String, PsiType> field = new HashMap<String, PsiType>();
 
     private boolean mSerializable = false;
+    private boolean mParcelable = false;
 
     public void setSerializable(boolean mSerializable) {
         this.mSerializable = mSerializable;
+    }
+
+    public void setParcelable(boolean parcelable) {
+        this.mParcelable = parcelable;
     }
 
     public void addField(String name, PsiType classType) {
         field.put(name, classType);
     }
 
-    public PsiClass generCode(PsiElementFactory factory, PsiClass javaFile) {
+    public PsiClass generaCode(PsiElementFactory factory, PsiClass javaFile) {
         if (mSerializable) {
             try {
                 PsiJavaCodeReferenceElement implementsReference =
@@ -46,6 +48,8 @@ public class JavaBean {
             builderMethod = createSetMethod(factory, javaFile, var.getKey(), var.getValue());
             javaFile.add(builderMethod);
         }
+        if (mParcelable)
+            new ParcelableGenerator(factory, javaFile).writeCreator();
         return javaFile;
 
     }

@@ -17,6 +17,7 @@ public class JsonParser {
     private PsiDirectory directory;
     private PsiElementFactory psiElementFactory;
     private boolean mSerializable=false;
+    private boolean mParcelable=false;
     public JsonParser(Project project,PsiDirectory fileDirectory){
         mProject = project;
         directory= fileDirectory;
@@ -27,6 +28,10 @@ public class JsonParser {
         this.mSerializable = mSerializable;
     }
 
+
+    public void setParcelable(boolean parcelable) {
+        this.mParcelable = parcelable;
+    }
     public  PsiType formatJsonReader(String text,String name){
         text = removeComment(text);
         return formatJsonReader(new JSONObject(text),name);
@@ -46,7 +51,8 @@ public class JsonParser {
             @Override
             protected void run() throws Throwable {
                 bean.setSerializable(mSerializable);
-                bean.generCode(psiElementFactory,psiClass);
+                bean.setParcelable(mParcelable);
+                bean.generaCode(psiElementFactory,psiClass);
                 directory.add(psiClass);
             }
         }.execute();

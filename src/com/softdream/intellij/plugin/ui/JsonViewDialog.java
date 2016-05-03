@@ -23,6 +23,8 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.io.IOException;
 
 public class JsonViewDialog extends DialogWrapper {
@@ -31,6 +33,7 @@ public class JsonViewDialog extends DialogWrapper {
     private JTextField textField1;
     private JPanel codePane;
     private JCheckBox serializableCheckBox;
+    private JCheckBox parcelableCheckBox;
     private Project mProject;
     private PsiFile mFile;
     private JsonParser parser;
@@ -43,7 +46,7 @@ public class JsonViewDialog extends DialogWrapper {
         }
     };
 
-    public JsonViewDialog(Project project, PsiDirectory file) {
+    public JsonViewDialog(Project project, final PsiDirectory file) {
         super(project);
         parser = new JsonParser(project, file);
         mProject = project;
@@ -68,7 +71,22 @@ public class JsonViewDialog extends DialogWrapper {
         codePane.setSize((int) (size.width * 0.75), (int) (size.height * 0.75));
         init();
         serializableCheckBox.setSelected(settings.isSerializable());
+        parcelableCheckBox.setSelected(settings.isParcelable());
         mEditor = editor;
+        parcelableCheckBox.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                if (parcelableCheckBox.isSelected())
+                    serializableCheckBox.setSelected(false);
+            }
+        });
+        serializableCheckBox.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                if (serializableCheckBox.isSelected())
+                    parcelableCheckBox.setSelected(false);
+            }
+        });
     }
 
     @NotNull
@@ -136,9 +154,11 @@ public class JsonViewDialog extends DialogWrapper {
             return false;
         }
         Settings.getInstance(mProject).setSerializable(serializableCheckBox.isSelected());
+        Settings.getInstance(mProject).setParcelable(parcelableCheckBox.isSelected());
         PsiType type = null;
         try {
             parser.setSerializable(serializableCheckBox.isSelected());
+            parser.setParcelable(parcelableCheckBox.isSelected());
             type = parser.formatJsonReader(PsiDocumentManager.getInstance(mProject).getDocument(mFile).getText(), textField1.getText());
         } catch (Exception e) {
             DialogsFactory.showErrorDialog(mProject, e.getMessage());
